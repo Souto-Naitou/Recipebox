@@ -45,7 +45,7 @@
                         <button class="welcome-btn primary" onclick="showRecipeManager()">
                             <i class="fas fa-plus"></i> 最初のレシピを作成
                         </button>
-                        <button class="welcome-btn secondary" onclick="importFromFile()">
+                        <button class="welcome-btn secondary" id="welcomeImportBtn">
                             <i class="fas fa-upload"></i> レシピをインポート
                         </button>
                     </div>
@@ -71,10 +71,10 @@
                         <button class="management-btn secondary" onclick="showRecipeList()">
                             <i class="fas fa-list"></i> レシピ一覧
                         </button>
-                        <button class="management-btn secondary" onclick="exportToFile()">
+                        <button class="management-btn secondary" id="exportBtn">
                             <i class="fas fa-download"></i> エクスポート
                         </button>
-                        <button class="management-btn secondary" onclick="importFromFile()">
+                        <button class="management-btn secondary" id="importBtn">
                             <i class="fas fa-upload"></i> インポート
                         </button>
                         <button class="management-btn tertiary" onclick="showBackupList()">

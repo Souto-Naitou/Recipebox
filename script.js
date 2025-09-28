@@ -29,13 +29,15 @@ document.addEventListener('DOMContentLoaded', function() {
 // イベントリスナーの設定
 function setupEventListeners() {
     // ボタンのイベントリスナー
-    const saveBtn = document.getElementById('saveBtn');
-    const loadBtn = document.getElementById('loadBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const importBtn = document.getElementById('importBtn');
+    const welcomeImportBtn = document.getElementById('welcomeImportBtn');
     const backupBtn = document.getElementById('backupBtn');
     const recipeManagerBtn = document.getElementById('recipeManagerBtn');
     
-    if (saveBtn) saveBtn.addEventListener('click', exportToFile);
-    if (loadBtn) loadBtn.addEventListener('click', importFromFile);
+    if (exportBtn) exportBtn.addEventListener('click', exportToFile);
+    if (importBtn) importBtn.addEventListener('click', importFromFile);
+    if (welcomeImportBtn) welcomeImportBtn.addEventListener('click', importFromFile);
     if (backupBtn) backupBtn.addEventListener('click', createBackup);
     if (recipeManagerBtn) recipeManagerBtn.addEventListener('click', showRecipeManager);
 }

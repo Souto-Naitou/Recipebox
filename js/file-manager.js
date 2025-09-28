@@ -36,7 +36,8 @@ function importFromFile() {
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const data = e.target.result;
+                    const jsonText = e.target.result;
+                    const data = JSON.parse(jsonText);
                     recipeDB.fromJSON(data);
                     updateAllUI();
                     showNotification('データを読み込みました', 'success');
@@ -93,7 +94,8 @@ function loadFromLocalStorage() {
     try {
         const data = localStorage.getItem('recipeDatabase');
         if (data) {
-            recipeDB.fromJSON(JSON.parse(data));
+            const parsedData = JSON.parse(data);
+            recipeDB.fromJSON(parsedData);
             return true;
         }
         return false;
@@ -152,11 +154,13 @@ function showBackupList() {
     if (choiceNum >= 1 && choiceNum <= keys.length) {
         const selectedKey = keys[choiceNum - 1];
         try {
-            const data = JSON.parse(localStorage.getItem(selectedKey));
+            const jsonString = localStorage.getItem(selectedKey);
+            const data = JSON.parse(jsonString);
             recipeDB.fromJSON(data);
             updateAllUI();
             showNotification('バックアップから復元しました', 'success');
         } catch (error) {
+            console.error('Error restoring backup:', error);
             showNotification('バックアップの復元に失敗しました', 'error');
         }
     }

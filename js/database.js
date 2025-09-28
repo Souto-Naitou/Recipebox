@@ -156,11 +156,19 @@ class RecipeDatabase {
 
     // JSONからデータベースを復元
     fromJSON(data) {
-        if (data.recipes) {
-            this.recipes = new Map(Object.entries(data.recipes));
-        }
-        if (data.inventory) {
-            this.inventory = new Map(Object.entries(data.inventory));
+        try {
+            // 文字列の場合はパースする
+            const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+            
+            if (parsedData.recipes) {
+                this.recipes = new Map(Object.entries(parsedData.recipes));
+            }
+            if (parsedData.inventory) {
+                this.inventory = new Map(Object.entries(parsedData.inventory));
+            }
+        } catch (error) {
+            console.error('Error parsing JSON data:', error);
+            throw new Error('無効なデータ形式です');
         }
     }
 }
