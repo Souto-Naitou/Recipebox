@@ -288,8 +288,10 @@ body {
 .section-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 .section-header h2 {
@@ -403,11 +405,10 @@ body {
 
 .ingredient-amount {
     font-weight: 700;
-    font-size: 1.2rem;
-    color: #34495e;
-    white-space: nowrap;
-    min-width: 40px;
-    text-align: right;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+    margin: 0;
+    line-height: 1;
 }
 
 /* Sub Recipes */
@@ -514,10 +515,124 @@ body {
 }
 
 .inventory-card {
-    text-align: center;
+    display: flex;
+    align-items: center;
     position: relative;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    padding: 25px;
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px 20px;
+    transition: all 0.3s ease;
+    min-height: 70px;
+    gap: 15px;
+}
+
+/* チェック状態のインベントリカード */
+.inventory-card.checked {
+    background: linear-gradient(135deg, #d4f5d4 0%, #a8e6a8 100%);
+    border: 2px solid #28a745;
+    box-shadow: 0 4px 20px rgba(40, 167, 69, 0.3);
+}
+
+/* インベントリアイテムのレイアウト */
+.inventory-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+/* チェックボックスコンテナ */
+.inventory-checkbox-container {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    z-index: 10;
+}
+
+/* カスタムチェックボックス */
+.inventory-checkbox {
+    display: none;
+}
+
+.inventory-checkbox-container {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10;
+}
+
+.checkbox-label {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--input-background);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.checkbox-label:hover {
+    border-color: #28a745;
+    transform: scale(1.1);
+    box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+}
+
+.inventory-checkbox:checked + .checkbox-label {
+    background: #28a745;
+    border-color: #28a745;
+}
+
+.inventory-checkbox:checked + .checkbox-label::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* アイコンと名前のスタイル */
+.ingredient-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+    transition: color 0.3s ease;
+    flex-shrink: 0;
+}
+
+.ingredient-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0;
+    padding-right: 35px;
+}
+
+.inventory-card.checked .ingredient-icon {
+    color: #28a745;
+}
+
+.ingredient-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0 0 4px 0;
+    transition: color 0.3s ease;
+    line-height: 1.2;
+    max-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: help;
+}
+
+.inventory-card.checked .ingredient-name {
+    color: #1e7e34;
 }
 
 .inventory-icon {
@@ -536,6 +651,29 @@ body {
     text-overflow: ellipsis;
 }
 
+/* 在庫量表示エリア */
+.inventory-amounts {
+    margin-bottom: 15px;
+}
+
+.current-amount, .needed-amount {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 8px 15px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    white-space: nowrap;
+    transition: background 0.3s ease;
+}
+
+.inventory-card.checked .current-amount,
+.inventory-card.checked .needed-amount {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+/* 適用されない古いスタイルを維持するためのフォールバック */
 .stock-info, .needed-info {
     display: flex;
     justify-content: space-between;
@@ -547,9 +685,9 @@ body {
     white-space: nowrap;
 }
 
-.stock-input {
+.stock-input, .inventory-input {
     width: 70px;
-    padding: 4px 8px;
+    padding: 6px 10px;
     border: 2px solid var(--select-border);
     border-radius: 6px;
     background: var(--select-bg);
@@ -558,6 +696,11 @@ body {
     font-size: 1rem;
     text-align: center;
     transition: all 0.3s ease;
+}
+
+.inventory-card.checked .inventory-input {
+    border-color: #28a745;
+    background: rgba(40, 167, 69, 0.1);
 }
 
 .stock-input:focus {
@@ -572,36 +715,54 @@ body {
     background: var(--bg-secondary);
 }
 
-.stock-amount, .needed-amount {
+.stock-amount, .needed-amount span {
     font-weight: 700;
     font-size: 1.1rem;
     white-space: nowrap;
 }
 
-.stock-label, .needed-label {
+.stock-label, .needed-label, .current-amount label {
     font-size: 0.9rem;
     opacity: 0.8;
     white-space: nowrap;
+    font-weight: 500;
+}
+
+.inventory-card.checked .current-amount label,
+.inventory-card.checked .needed-amount span {
+    color: #1e7e34;
+    font-weight: 600;
 }
 
 .status-indicator {
     position: absolute;
     top: 15px;
-    right: 15px;
-    width: 15px;
-    height: 15px;
+    left: 15px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
     animation: glow 2s infinite;
+    transition: all 0.3s ease;
 }
 
-.status-indicator[data-status="sufficient"] {
-    background: #2ecc71;
-    box-shadow: 0 0 10px #2ecc71;
+.status-indicator.sufficient {
+    background: #28a745;
+    box-shadow: 0 0 10px #28a745;
 }
 
-.status-indicator[data-status="insufficient"] {
-    background: #e74c3c;
-    box-shadow: 0 0 10px #e74c3c;
+.status-indicator.insufficient {
+    background: #dc3545;
+    box-shadow: 0 0 10px #dc3545;
+}
+
+.inventory-card.checked .status-indicator {
+    transform: scale(1.1);
 }
 
 @keyframes glow {
@@ -667,6 +828,58 @@ body {
     box-shadow: var(--card-shadow);
 }
 
+/* 計算ヘッダーのスタイル */
+.calculation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: linear-gradient(135deg, rgba(30, 64, 175, 0.08), rgba(30, 64, 175, 0.04));
+    border-radius: 12px;
+    border: 2px solid var(--primary-color);
+    border-left: 6px solid var(--primary-color);
+}
+
+.calculation-header h4 {
+    margin: 0;
+    color: var(--primary-color);
+    font-size: 1.3em;
+    font-weight: 600;
+}
+
+/* 在庫コントロールボタン */
+.inventory-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.control-btn {
+    padding: 8px 16px;
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    background: var(--bg-primary);
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.control-btn:hover {
+    background: var(--primary-color);
+    color: var(--text-inverse);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+}
+
+.control-btn:active {
+    transform: translateY(0);
+}
+
 /* Footer */
 .footer {
     text-align: center;
@@ -680,6 +893,27 @@ body {
 }
 
 /* Responsive Design */
+/* タブレット向けレスポンシブ対応 */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .section-header {
+        gap: 12px;
+    }
+    
+    .management-buttons {
+        gap: 8px;
+    }
+    
+    .management-btn {
+        font-size: 0.85rem;
+        padding: 10px 16px;
+        height: 42px;
+    }
+    
+    .recipe-search-bar {
+        min-width: 180px;
+    }
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 15px;
@@ -693,6 +927,26 @@ body {
         flex-direction: column;
         align-items: flex-start;
         gap: 15px;
+    }
+    
+    .management-buttons {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 8px;
+    }
+    
+    .management-btn {
+        flex: 1;
+        min-width: 120px;
+        max-width: 150px;
+        font-size: 0.8rem;
+        padding: 10px 12px;
+        height: 40px;
+    }
+    
+    .recipe-search-bar {
+        width: 100%;
+        margin-bottom: 15px;
     }
     
     .section-header h2 {
@@ -917,17 +1171,21 @@ body {
     gap: 10px;
     margin-bottom: 20px;
     align-items: center;
+    flex-shrink: 1;
+    min-width: 200px;
 }
 
 .recipe-search-bar input {
     flex: 1;
-    padding: 15px 20px;
+    padding: 12px 20px;
     border: 2px solid rgba(74, 144, 226, 0.3);
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.9);
     color: var(--text-primary);
     font-size: 1rem;
     transition: all 0.3s ease;
+    height: 44px;
+    box-sizing: border-box;
 }
 
 .recipe-search-bar input:focus {
@@ -942,7 +1200,7 @@ body {
 }
 
 .search-btn {
-    padding: 15px 20px;
+    padding: 12px 20px;
     background: var(--primary-color);
     color: white;
     border: none;
@@ -951,6 +1209,10 @@ body {
     transition: all 0.3s ease;
     font-weight: 500;
     min-width: 60px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .search-btn:hover {
@@ -1017,9 +1279,12 @@ body {
 
 .management-buttons {
     display: flex;
-    gap: 15px;
+    gap: 10px;
     flex-wrap: wrap;
     margin-bottom: 25px;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
 }
 
 .management-btn {
@@ -1035,6 +1300,8 @@ body {
     gap: 8px;
     position: relative;
     overflow: hidden;
+    height: 44px;
+    white-space: nowrap;
 }
 
 .management-btn.primary {

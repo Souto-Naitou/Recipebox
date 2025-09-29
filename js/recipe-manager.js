@@ -892,6 +892,108 @@ function filterRecipes() {
     updateRecipeListDisplay();
 }
 
+// 材料を計算（HTMLから呼び出される）
+function calculateMaterials() {
+    console.log('Old calculateMaterials called');
+    calculateMaterialsNew();
+}
+
+function calculateMaterialsNew() {
+    try {
+        const quantityInput = document.getElementById('quantity');
+        const resultDiv = document.getElementById('calculationResult');
+        
+        if (!quantityInput || !resultDiv) {
+            console.error('Calculator elements not found');
+            return;
+        }
+        
+        const quantity = parseInt(quantityInput.value) || 0;
+        if (quantity <= 0) {
+            resultDiv.innerHTML = '<p class="error">有効な個数を入力してください</p>';
+            return;
+        }
+        
+        // 選択されたレシピを取得
+        const selectedRecipeName = getSelectValue('selectedRecipe');
+        console.log('Selected recipe name:', selectedRecipeName);
+        
+        if (!selectedRecipeName) {
+            resultDiv.innerHTML = '<p class="error">まずメインレシピを選択してください</p>';
+            return;
+        }
+        
+        const recipe = recipeDB.getRecipe(selectedRecipeName);
+        if (!recipe) {
+            resultDiv.innerHTML = '<p class="error">選択されたレシピが見つかりません</p>';
+            return;
+        }
+        
+        // 必要な材料を計算
+        const expandedIngredients = recipeDB.expandIngredients(selectedRecipeName, quantity);
+        
+        let resultHtml = `
+            <div class="calculation-header">
+                <h4>${recipe.name} ${quantity}個分の必要材料</h4>
+                <div class="inventory-controls">
+                    <button onclick="toggleAllInventoryCheckboxes(true)" class="control-btn">
+                        <i class="fas fa-check-square"></i> 全選択
+                    </button>
+                    <button onclick="toggleAllInventoryCheckboxes(false)" class="control-btn">
+                        <i class="fas fa-square"></i> 全解除
+                    </button>
+                </div>
+            </div>
+        `;
+        resultHtml += '<div class="inventory-grid">';
+        
+        for (const [ingredient, amount] of Object.entries(expandedIngredients)) {
+            const ingredientData = recipeDB.getRecipe(ingredient);
+            const icon = ingredientData ? ingredientData.icon : 'fa-cube';
+            
+            resultHtml += `
+                <div class="inventory-card">
+                    <div class="inventory-checkbox-container">
+                        <input 
+                            type="checkbox" 
+                            id="checkbox-${ingredient}" 
+                            class="inventory-checkbox" 
+                            data-ingredient="${ingredient}"
+                            onchange="updateInventoryCardColor('${ingredient}', this.checked)"
+                        >
+                        <label for="checkbox-${ingredient}" class="checkbox-label"></label>
+                    </div>
+                    <div class="ingredient-icon">
+                        <i class="fas ${icon}"></i>
+                    </div>
+                    <div class="ingredient-info">
+                        <div class="ingredient-name" title="${ingredient}">${ingredient}</div>
+                        <div class="ingredient-amount">${amount}</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        resultHtml += '</div>';
+        
+        console.log('Generated HTML with checkboxes:', resultHtml);
+        resultDiv.innerHTML = resultHtml;
+        
+        // チェックボックスが正しく生成されているか確認
+        setTimeout(() => {
+            const checkboxes = document.querySelectorAll('.inventory-checkbox');
+            const labels = document.querySelectorAll('.checkbox-label');
+            console.log('Found checkboxes:', checkboxes.length);
+            console.log('Found labels:', labels.length);
+            console.log('Sample checkbox HTML:', checkboxes[0]?.outerHTML);
+        }, 100);
+        
+    } catch (error) {
+        console.error('Error in calculateMaterials:', error);
+        document.getElementById('calculationResult').innerHTML = '<p class="error">計算中にエラーが発生しました</p>';
+    }
+}
+
 // レシピを計算
 function calculateRecipe() {
     try {
@@ -909,39 +1011,77 @@ function calculateRecipe() {
             return;
         }
         
-        if (!recipeDB.currentMainRecipe) {
+        // 選択されたレシピを取得
+        const selectedRecipeName = getSelectValue('selectedRecipe');
+        console.log('Selected recipe name:', selectedRecipeName);
+        
+        if (!selectedRecipeName) {
             resultDiv.innerHTML = '<p class="error">まずメインレシピを選択してください</p>';
             return;
         }
-        
-        const recipe = recipeDB.getRecipe(recipeDB.currentMainRecipe);
+
+        const recipe = recipeDB.getRecipe(selectedRecipeName);
         if (!recipe) {
             resultDiv.innerHTML = '<p class="error">選択されたレシピが見つかりません</p>';
             return;
         }
-        
+
         // 必要な材料を計算
-        const expandedIngredients = recipeDB.expandIngredients(recipeDB.currentMainRecipe, quantity);
-        
-        let resultHtml = `<h4>${recipe.name} ${quantity}個分の必要材料</h4>`;
-        resultHtml += '<div class="calculation-ingredients">';
+        const expandedIngredients = recipeDB.expandIngredients(selectedRecipeName, quantity);        let resultHtml = `
+            <div class="calculation-header">
+                <h4>${recipe.name} ${quantity}個分の必要材料</h4>
+                <div class="inventory-controls">
+                    <button onclick="toggleAllInventoryCheckboxes(true)" class="control-btn">
+                        <i class="fas fa-check-square"></i> 全選択
+                    </button>
+                    <button onclick="toggleAllInventoryCheckboxes(false)" class="control-btn">
+                        <i class="fas fa-square"></i> 全解除
+                    </button>
+                </div>
+            </div>
+        `;
+        resultHtml += '<div class="inventory-grid">';
         
         for (const [ingredient, amount] of Object.entries(expandedIngredients)) {
             const ingredientData = recipeDB.getRecipe(ingredient);
             const icon = ingredientData ? ingredientData.icon : 'fa-cube';
+            const currentStock = recipeDB.getInventory(ingredient) || 0;
+            const statusClass = currentStock >= amount ? 'sufficient' : 'insufficient';
             
             resultHtml += `
-                <div class="calculation-item">
-                    <i class="fas ${icon} ingredient-icon"></i>
-                    <span class="ingredient-name">${ingredient}</span>
-                    <span class="ingredient-amount">${amount}</span>
+                <div class="inventory-card">
+                    <div class="inventory-checkbox-container">
+                        <input 
+                            type="checkbox" 
+                            id="checkbox-${ingredient}" 
+                            class="inventory-checkbox" 
+                            data-ingredient="${ingredient}"
+                            onchange="updateInventoryCardColor('${ingredient}', this.checked)"
+                        >
+                        <label for="checkbox-${ingredient}" class="checkbox-label"></label>
+                    </div>
+                    <div class="ingredient-icon">
+                        <i class="fas ${icon}"></i>
+                    </div>
+                    <div class="ingredient-name">${ingredient}</div>
+                    <div class="ingredient-amount">${amount}</div>
                 </div>
             `;
         }
         
         resultHtml += '</div>';
         
+        console.log('Generated HTML with checkboxes:', resultHtml);
         resultDiv.innerHTML = resultHtml;
+        
+        // チェックボックスが正しく生成されているか確認
+        setTimeout(() => {
+            const checkboxes = document.querySelectorAll('.inventory-checkbox');
+            const labels = document.querySelectorAll('.checkbox-label');
+            console.log('Found checkboxes:', checkboxes.length);
+            console.log('Found labels:', labels.length);
+            console.log('Sample checkbox HTML:', checkboxes[0]?.outerHTML);
+        }, 100);
         
     } catch (error) {
         console.error('Error in calculateRecipe:', error);

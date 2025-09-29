@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>レシピ管理システム</title>
+    <title>RecipeBox</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -15,8 +16,8 @@
             <div class="header-content">
                 <div class="header-left">
                     <h1 class="logo">
-                        <i class="fas fa-utensils"></i>
-                        レシピ管理システム
+                        <i class="fas fa-archive"></i>
+                        RecipeBox
                     </h1>
                     <p class="subtitle">レシピと材料の統合管理ツール</p>
                 </div>
@@ -127,7 +128,7 @@
                     <div class="calculator-input">
                         <label for="quantity">作りたい個数:</label>
                         <input type="number" id="quantity" value="100" min="1" max="1000">
-                        <button onclick="calculateMaterials()">計算</button>
+                        <button onclick="calculateMaterialsNew()">計算</button>
                     </div>
                     <div class="calculation-result" id="calculationResult">
                         <!-- 計算結果がここに表示されます -->
@@ -138,7 +139,7 @@
 
         <!-- Footer -->
         <footer class="footer">
-            <p>&copy; 2025 レシピ管理システム. All rights reserved.</p>
+                        <p>© 2025 RecipeBox. All rights reserved.</p>
         </footer>
     </div>
 
