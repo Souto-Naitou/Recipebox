@@ -40,6 +40,9 @@ function setupEventListeners() {
     if (welcomeImportBtn) welcomeImportBtn.addEventListener('click', importFromFile);
     if (backupBtn) backupBtn.addEventListener('click', createBackup);
     if (recipeManagerBtn) recipeManagerBtn.addEventListener('click', showRecipeManager);
+    
+    // ウィンドウリサイズ時の処理（現在は不要）
+    // 折りたたみ機能はリサイズに影響されない
 }
 
 // 材料計算機能

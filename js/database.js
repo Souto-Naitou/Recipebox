@@ -171,5 +171,21 @@ class RecipeDatabase {
             throw new Error('無効なデータ形式です');
         }
     }
+
+    // データベースの状態を判定する
+    isEmpty() {
+        const recipeCount = this.recipes.size;
+        const inventoryCount = this.inventory.size;
+        return recipeCount === 0 && inventoryCount === 0;
+    }
+
+    // 登録されているデータ数を取得
+    getDataCounts() {
+        return {
+            recipes: this.recipes.size,
+            inventory: this.inventory.size,
+            total: this.recipes.size + this.inventory.size
+        };
+    }
 }
 

@@ -443,20 +443,99 @@ let currentEditingSelect = null;
 
 // 新しい材料追加ダイアログを表示
 function showAddIngredientDialog(selectElement, ingredientDiv) {
+    console.log('showAddIngredientDialog called with:', selectElement, ingredientDiv);
+    
+    // 現在編集中の要素を保存
     currentEditingSelect = selectElement;
     
-    // フォームをクリア
-    document.getElementById('newIngredientName').value = '';
-    document.getElementById('newIngredientIcon').value = 'fa-utensils';
+    // DOMが確実に利用可能になるまで待つ
+    const initializeDialog = () => {
+        try {
+            console.log('Initializing add ingredient dialog...');
+            console.log('Document ready state:', document.readyState);
+            
+            // フォーム要素をクリア
+            const nameInput = document.getElementById('newIngredientName');
+            console.log('Name input found:', !!nameInput);
+            
+            if (nameInput) {
+                nameInput.value = '';
+            }
+            
+            // アイコン選択をリセット
+            resetIngredientIconSelection();
+            
+            // モーダルを表示
+            const modal = document.getElementById('addIngredientModal');
+            console.log('Modal found:', !!modal);
+            
+            if (modal) {
+                modal.style.display = 'block';
+                
+                // フォーカスを設定
+                if (nameInput) {
+                    setTimeout(() => nameInput.focus(), 50);
+                }
+            } else {
+                console.error('Modal element not found');
+            }
+            
+        } catch (error) {
+            console.error('Error in showAddIngredientDialog:', error);
+        }
+    };
     
-    // モーダルを表示
-    document.getElementById('addIngredientModal').style.display = 'block';
-    
-    // 材料名にフォーカス
-    setTimeout(() => {
-        document.getElementById('newIngredientName').focus();
-    }, 100);
+    // DOMの状態に応じて実行
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeDialog);
+    } else {
+        setTimeout(initializeDialog, 10);
+    }
 }
+
+// アイコン選択をリセットする補助関数
+function resetIngredientIconSelection() {
+    try {
+        console.log('=== resetIngredientIconSelection ===');
+        const integration = window.dropdownIntegration || (typeof dropdownIntegration !== 'undefined' ? dropdownIntegration : null);
+        console.log('Integration available:', !!integration);
+        
+        if (integration) {
+            console.log('Dropdowns in integration:', integration.dropdowns.size);
+            console.log('Available dropdown keys:', Array.from(integration.dropdowns.keys()));
+            
+            // カスタムドロップダウンの場合
+            const iconDropdown = integration.getDropdown('newIngredientIcon');
+            console.log('Icon dropdown found:', !!iconDropdown);
+            
+            if (iconDropdown) {
+                console.log('Icon dropdown setValue method available:', typeof iconDropdown.setValue);
+                if (iconDropdown.setValue) {
+                    iconDropdown.setValue('fa-utensils');
+                    console.log('Icon dropdown reset to fa-utensils');
+                }
+            } else {
+                console.log('No icon dropdown found, checking for custom ID...');
+                const customIconDropdown = integration.getDropdown('newIngredientIcon_custom');
+                console.log('Custom icon dropdown found:', !!customIconDropdown);
+            }
+        } else {
+            // 通常のselect要素の場合
+            console.log('Using fallback to regular select element');
+            const iconSelect = document.getElementById('newIngredientIcon');
+            console.log('Icon select element found:', !!iconSelect);
+            if (iconSelect) {
+                iconSelect.value = 'fa-utensils';
+                console.log('Icon select reset to fa-utensils');
+            }
+        }
+    } catch (error) {
+        console.error('Error resetting icon selection:', error);
+    }
+}
+
+// グローバルに利用可能にする
+window.showAddIngredientDialog = showAddIngredientDialog;
 
 // 新しい材料追加モーダルを閉じる
 function closeAddIngredientModal() {
@@ -464,7 +543,10 @@ function closeAddIngredientModal() {
     
     // 選択をリセット
     if (currentEditingSelect) {
-        currentEditingSelect.value = '';
+        // カスタムドロップダウンの場合は値をリセットしない（選択を保持）
+        if (!currentEditingSelect.classList.contains('custom-dropdown')) {
+            currentEditingSelect.value = '';
+        }
         currentEditingSelect = null;
     }
 }
@@ -924,8 +1006,24 @@ function deleteRecipe(recipeName) {
 
 // 新しい材料を保存（モーダル用）
 function saveNewIngredient() {
-    const name = document.getElementById('newIngredientName').value.trim();
-    const icon = document.getElementById('newIngredientIcon').value;
+    const nameInput = document.getElementById('newIngredientName');
+    const name = nameInput ? nameInput.value.trim() : '';
+    
+    // カスタムドロップダウンからアイコンを取得
+    let icon = 'fa-utensils'; // デフォルト値
+    const integration = window.dropdownIntegration || (typeof dropdownIntegration !== 'undefined' ? dropdownIntegration : null);
+    if (integration) {
+        const iconDropdown = integration.getDropdown('newIngredientIcon');
+        if (iconDropdown && iconDropdown.getValue) {
+            icon = iconDropdown.getValue() || 'fa-utensils';
+        }
+    } else {
+        // フォールバック: 通常のselect要素
+        const iconSelect = document.getElementById('newIngredientIcon');
+        if (iconSelect) {
+            icon = iconSelect.value || 'fa-utensils';
+        }
+    }
     
     
     if (!name) {
@@ -946,7 +1044,25 @@ function saveNewIngredient() {
         });
         
         // 現在編集中の選択要素に新しい材料を追加
-        if (currentEditingSelect) {
+        if (currentEditingSelect && integration) {
+            // カスタムドロップダウンで適切なドロップダウンを探す
+            let targetDropdown = null;
+            for (const [key, dropdown] of integration.dropdowns) {
+                if (dropdown.container === currentEditingSelect || 
+                    dropdown.container.dataset.originalId === currentEditingSelect.id ||
+                    dropdown.container.querySelector('select') === currentEditingSelect) {
+                    targetDropdown = dropdown;
+                    break;
+                }
+            }
+            
+            if (targetDropdown && targetDropdown.addOption) {
+                // オプションを追加して選択
+                targetDropdown.addOption(name, `${name} (基本材料)`);
+                targetDropdown.setValue(name);
+            }
+        } else if (currentEditingSelect) {
+            // フォールバック: 通常のselect要素
             const newOption = document.createElement('option');
             newOption.value = name;
             newOption.textContent = `${name} (基本材料)`;
@@ -954,7 +1070,11 @@ function saveNewIngredient() {
             
             // セパレーターの後に追加
             const separator = currentEditingSelect.querySelector('option[disabled]');
-            currentEditingSelect.insertBefore(newOption, separator.nextSibling);
+            if (separator && separator.nextSibling) {
+                currentEditingSelect.insertBefore(newOption, separator.nextSibling);
+            } else {
+                currentEditingSelect.appendChild(newOption);
+            }
         }
         
         // 他の材料選択欄も更新
