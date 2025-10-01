@@ -58,6 +58,15 @@ function createInventoryCard(ingredient, needed, currentValue) {
     
     div.innerHTML = `
         <div class="inventory-item">
+            <div class="inventory-checkbox-container">
+                <input 
+                    type="checkbox" 
+                    id="checkbox-${ingredient}" 
+                    class="inventory-checkbox" 
+                    data-ingredient="${ingredient}"
+                >
+                <label for="checkbox-${ingredient}" class="checkbox-label"></label>
+            </div>
             <i class="fas ${icon} ingredient-icon"></i>
             <span class="ingredient-name">${ingredient}</span>
         </div>
@@ -88,6 +97,14 @@ function createInventoryCard(ingredient, needed, currentValue) {
         input.addEventListener('input', debounce((e) => {
             updateInventoryFromInput(e.target.dataset.ingredient, e.target.value);
         }, 300));
+    }
+    
+    // チェックボックスのイベントリスナーを追加
+    const checkbox = div.querySelector('.inventory-checkbox');
+    if (checkbox) {
+        checkbox.addEventListener('change', (e) => {
+            updateInventoryCardColor(e.target.dataset.ingredient, e.target.checked);
+        });
     }
     
     return div;
@@ -136,6 +153,35 @@ function updateMaxCraftable() {
     }
 }
 
+// チェックボックスの状態によってカードの色を変更
+function updateInventoryCardColor(ingredient, isChecked) {
+    try {
+        const card = document.querySelector(`input[data-ingredient="${ingredient}"]`).closest('.inventory-card');
+        if (card) {
+            if (isChecked) {
+                card.classList.add('checked');
+            } else {
+                card.classList.remove('checked');
+            }
+        }
+    } catch (error) {
+        console.error('Error updating inventory card color:', error);
+    }
+}
+
+// すべてのチェックボックスをオン/オフする関数
+function toggleAllInventoryCheckboxes(checked) {
+    try {
+        const checkboxes = document.querySelectorAll('.inventory-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = checked;
+            updateInventoryCardColor(checkbox.dataset.ingredient, checked);
+        });
+    } catch (error) {
+        console.error('Error toggling all checkboxes:', error);
+    }
+}
+
 // デバウンス関数
 function debounce(func, wait) {
     let timeout;
@@ -148,3 +194,8 @@ function debounce(func, wait) {
         timeout = setTimeout(later, wait);
     };
 }
+
+// グローバル関数として公開
+window.updateInventoryCardColor = updateInventoryCardColor;
+window.toggleAllInventoryCheckboxes = toggleAllInventoryCheckboxes;
+window.updateInventoryFromInput = updateInventoryFromInput;

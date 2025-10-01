@@ -291,10 +291,15 @@ class DropdownIntegration {
 
     // 新規追加処理
     handleAddNew(dropdown, context) {
+        console.log('handleAddNew called', context.type);
         if (context.type === 'ingredient') {
             // 材料追加ダイアログを表示
             if (typeof showAddIngredientDialog === 'function') {
+                console.log('Calling showAddIngredientDialog');
+                dropdown.close(); // ドロップダウンを閉じる
                 showAddIngredientDialog(dropdown.container, dropdown.container.closest('.ingredient-entry'));
+            } else {
+                console.error('showAddIngredientDialog function not found');
             }
         }
     }

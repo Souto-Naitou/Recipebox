@@ -44,9 +44,21 @@
     --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     --modal-bg: #ffffff;
     --modal-overlay: rgba(0, 0, 0, 0.5);
+    
+    /* レシピツリー用の色設定 */
+    --tree-recipe-bg: rgba(59, 130, 246, 0.1);
+    --tree-recipe-border: #3b82f6;
+    --tree-ingredient-bg: #dcfce7;
+    --tree-ingredient-border: #16a34a;
+    --tree-line-color: #9ca3af;
+    
+    /* スクロールバー用の色設定（ライトテーマ） */
+    --scrollbar-track: #f3f4f6;
+    --scrollbar-thumb: linear-gradient(135deg, #1e40af, #dc2626);
+    --scrollbar-thumb-hover: linear-gradient(135deg, #1d4ed8, #b91c1c);
 }
 
-/* ダークテーマ */
+/* ===== ダークテーマ設定 ===== */
 [data-theme="dark"] {
     --primary-color: #3b82f6;        /* 明るい青 */
     --primary-hover: #2563eb;        /* ホバー時の青 */
@@ -86,6 +98,18 @@
     --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     --modal-bg: #1f2937;
     --modal-overlay: rgba(0, 0, 0, 0.7);
+    
+    /* レシピツリー用の色（ダークテーマ） */
+    --tree-recipe-bg: rgba(59, 130, 246, 0.2);
+    --tree-recipe-border: #60a5fa;
+    --tree-ingredient-bg: rgba(34, 197, 94, 0.2);
+    --tree-ingredient-border: #22c55e;
+    --tree-line-color: #6b7280;
+    
+    /* スクロールバー用の色調整（ダークテーマ） */
+    --scrollbar-track: #374151;
+    --scrollbar-thumb: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    --scrollbar-thumb-hover: linear-gradient(135deg, #2563eb, #7c3aed);
 }
 
 body {
@@ -97,6 +121,81 @@ body {
     transition: background 0.3s ease, color 0.3s ease;
 }
 
+/* ===== 統一スクロールバーデザイン ===== */
+/* 全体のスクロールバー */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    border-radius: 6px;
+    border: 2px solid var(--bg-secondary);
+    transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--primary-hover), var(--primary-color));
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: var(--primary-hover);
+    transform: scale(0.95);
+}
+
+::-webkit-scrollbar-corner {
+    background: var(--bg-secondary);
+}
+
+/* スクロールバーのアニメーション */
+@keyframes scrollbarPulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* スクロール中のアニメーション */
+::-webkit-scrollbar-thumb:hover {
+    animation: scrollbarPulse 2s infinite;
+}
+
+/* 薄いスクロールバー（モーダル内など） */
+.thin-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+    background: var(--bg-accent);
+    border-radius: 4px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--border-dark);
+    border-radius: 4px;
+    border: 1px solid var(--bg-accent);
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Main Content */
+.main-content {
+    margin-top: 60px;
+    min-height: calc(100vh - 60px);
+    padding: 30px 0;
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -105,53 +204,50 @@ body {
 
 /* Header */
 .header {
-    text-align: center;
-    margin-bottom: 40px;
-    padding: 40px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    z-index: 1000;
+    height: 60px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    backdrop-filter: none;
+}
+
+/* ダークテーマでのヘッダー背景 */
+[data-theme="dark"] .header {
+    background: #111827;
 }
 
 .header-content {
-    background: var(--card-bg);
-    backdrop-filter: blur(15px);
-    padding: 30px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow: var(--card-shadow);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: relative;
-}
-
-.header-left {
-    flex: 1;
-    text-align: center;
-}
-
-.header-right {
-    position: absolute;
-    right: 30px;
-    top: 50%;
-    transform: translateY(-50%);
+    height: 100%;
 }
 
 .logo {
-    font-size: 3rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    color: white;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
 }
 
 .logo i {
-    margin-right: 15px;
-    color: #d4a574;
+    margin-right: 8px;
+    color: var(--primary-color);
 }
 
 .subtitle {
-    font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.8);
-    font-weight: 300;
+    display: none;
 }
 
 /* テーマスイッチ */
@@ -159,8 +255,8 @@ body {
     background: var(--bg-secondary);
     border: 2px solid var(--border-color);
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -196,8 +292,10 @@ body {
 .section-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 .section-header h2 {
@@ -311,11 +409,10 @@ body {
 
 .ingredient-amount {
     font-weight: 700;
-    font-size: 1.2rem;
-    color: #34495e;
-    white-space: nowrap;
-    min-width: 40px;
-    text-align: right;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+    margin: 0;
+    line-height: 1;
 }
 
 /* Sub Recipes */
@@ -422,10 +519,124 @@ body {
 }
 
 .inventory-card {
-    text-align: center;
+    display: flex;
+    align-items: center;
     position: relative;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    padding: 25px;
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px 20px;
+    transition: all 0.3s ease;
+    min-height: 70px;
+    gap: 15px;
+}
+
+/* チェック状態のインベントリカード */
+.inventory-card.checked {
+    background: linear-gradient(135deg, #d4f5d4 0%, #a8e6a8 100%);
+    border: 2px solid #28a745;
+    box-shadow: 0 4px 20px rgba(40, 167, 69, 0.3);
+}
+
+/* インベントリアイテムのレイアウト */
+.inventory-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+/* チェックボックスコンテナ */
+.inventory-checkbox-container {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    z-index: 10;
+}
+
+/* カスタムチェックボックス */
+.inventory-checkbox {
+    display: none;
+}
+
+.inventory-checkbox-container {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10;
+}
+
+.checkbox-label {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--input-background);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.checkbox-label:hover {
+    border-color: #28a745;
+    transform: scale(1.1);
+    box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+}
+
+.inventory-checkbox:checked + .checkbox-label {
+    background: #28a745;
+    border-color: #28a745;
+}
+
+.inventory-checkbox:checked + .checkbox-label::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* アイコンと名前のスタイル */
+.ingredient-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+    transition: color 0.3s ease;
+    flex-shrink: 0;
+}
+
+.ingredient-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0;
+    padding-right: 35px;
+}
+
+.inventory-card.checked .ingredient-icon {
+    color: #28a745;
+}
+
+.ingredient-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0 0 4px 0;
+    transition: color 0.3s ease;
+    line-height: 1.2;
+    max-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: help;
+}
+
+.inventory-card.checked .ingredient-name {
+    color: #1e7e34;
 }
 
 .inventory-icon {
@@ -444,6 +655,29 @@ body {
     text-overflow: ellipsis;
 }
 
+/* 在庫量表示エリア */
+.inventory-amounts {
+    margin-bottom: 15px;
+}
+
+.current-amount, .needed-amount {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 8px 15px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    white-space: nowrap;
+    transition: background 0.3s ease;
+}
+
+.inventory-card.checked .current-amount,
+.inventory-card.checked .needed-amount {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+/* 適用されない古いスタイルを維持するためのフォールバック */
 .stock-info, .needed-info {
     display: flex;
     justify-content: space-between;
@@ -455,9 +689,9 @@ body {
     white-space: nowrap;
 }
 
-.stock-input {
+.stock-input, .inventory-input {
     width: 70px;
-    padding: 4px 8px;
+    padding: 6px 10px;
     border: 2px solid var(--select-border);
     border-radius: 6px;
     background: var(--select-bg);
@@ -466,6 +700,11 @@ body {
     font-size: 1rem;
     text-align: center;
     transition: all 0.3s ease;
+}
+
+.inventory-card.checked .inventory-input {
+    border-color: #28a745;
+    background: rgba(40, 167, 69, 0.1);
 }
 
 .stock-input:focus {
@@ -480,36 +719,54 @@ body {
     background: var(--bg-secondary);
 }
 
-.stock-amount, .needed-amount {
+.stock-amount, .needed-amount span {
     font-weight: 700;
     font-size: 1.1rem;
     white-space: nowrap;
 }
 
-.stock-label, .needed-label {
+.stock-label, .needed-label, .current-amount label {
     font-size: 0.9rem;
     opacity: 0.8;
     white-space: nowrap;
+    font-weight: 500;
+}
+
+.inventory-card.checked .current-amount label,
+.inventory-card.checked .needed-amount span {
+    color: #1e7e34;
+    font-weight: 600;
 }
 
 .status-indicator {
     position: absolute;
     top: 15px;
-    right: 15px;
-    width: 15px;
-    height: 15px;
+    left: 15px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
     animation: glow 2s infinite;
+    transition: all 0.3s ease;
 }
 
-.status-indicator[data-status="sufficient"] {
-    background: #2ecc71;
-    box-shadow: 0 0 10px #2ecc71;
+.status-indicator.sufficient {
+    background: #28a745;
+    box-shadow: 0 0 10px #28a745;
 }
 
-.status-indicator[data-status="insufficient"] {
-    background: #e74c3c;
-    box-shadow: 0 0 10px #e74c3c;
+.status-indicator.insufficient {
+    background: #dc3545;
+    box-shadow: 0 0 10px #dc3545;
+}
+
+.inventory-card.checked .status-indicator {
+    transform: scale(1.1);
 }
 
 @keyframes glow {
@@ -575,6 +832,58 @@ body {
     box-shadow: var(--card-shadow);
 }
 
+/* 計算ヘッダーのスタイル */
+.calculation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: linear-gradient(135deg, rgba(30, 64, 175, 0.08), rgba(30, 64, 175, 0.04));
+    border-radius: 12px;
+    border: 2px solid var(--primary-color);
+    border-left: 6px solid var(--primary-color);
+}
+
+.calculation-header h4 {
+    margin: 0;
+    color: var(--primary-color);
+    font-size: 1.3em;
+    font-weight: 600;
+}
+
+/* 在庫コントロールボタン */
+.inventory-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.control-btn {
+    padding: 8px 16px;
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    background: var(--bg-primary);
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.control-btn:hover {
+    background: var(--primary-color);
+    color: var(--text-inverse);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+}
+
+.control-btn:active {
+    transform: translateY(0);
+}
+
 /* Footer */
 .footer {
     text-align: center;
@@ -588,6 +897,27 @@ body {
 }
 
 /* Responsive Design */
+/* タブレット向けレスポンシブ対応 */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .section-header {
+        gap: 12px;
+    }
+    
+    .management-buttons {
+        gap: 8px;
+    }
+    
+    .management-btn {
+        font-size: 0.85rem;
+        padding: 10px 16px;
+        height: 42px;
+    }
+    
+    .recipe-search-bar {
+        min-width: 180px;
+    }
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 15px;
@@ -601,6 +931,26 @@ body {
         flex-direction: column;
         align-items: flex-start;
         gap: 15px;
+    }
+    
+    .management-buttons {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 8px;
+    }
+    
+    .management-btn {
+        flex: 1;
+        min-width: 120px;
+        max-width: 150px;
+        font-size: 0.8rem;
+        padding: 10px 12px;
+        height: 40px;
+    }
+    
+    .recipe-search-bar {
+        width: 100%;
+        margin-bottom: 15px;
     }
     
     .section-header h2 {
@@ -825,17 +1175,21 @@ body {
     gap: 10px;
     margin-bottom: 20px;
     align-items: center;
+    flex-shrink: 1;
+    min-width: 200px;
 }
 
 .recipe-search-bar input {
     flex: 1;
-    padding: 15px 20px;
+    padding: 12px 20px;
     border: 2px solid rgba(74, 144, 226, 0.3);
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.9);
     color: var(--text-primary);
     font-size: 1rem;
     transition: all 0.3s ease;
+    height: 44px;
+    box-sizing: border-box;
 }
 
 .recipe-search-bar input:focus {
@@ -850,7 +1204,7 @@ body {
 }
 
 .search-btn {
-    padding: 15px 20px;
+    padding: 12px 20px;
     background: var(--primary-color);
     color: white;
     border: none;
@@ -859,6 +1213,10 @@ body {
     transition: all 0.3s ease;
     font-weight: 500;
     min-width: 60px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .search-btn:hover {
@@ -925,9 +1283,12 @@ body {
 
 .management-buttons {
     display: flex;
-    gap: 15px;
+    gap: 10px;
     flex-wrap: wrap;
     margin-bottom: 25px;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
 }
 
 .management-btn {
@@ -943,6 +1304,8 @@ body {
     gap: 8px;
     position: relative;
     overflow: hidden;
+    height: 44px;
+    white-space: nowrap;
 }
 
 .management-btn.primary {
@@ -1026,10 +1389,33 @@ body {
 .recipe-grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
-    max-height: 60vh;
+    gap: 15px;
+    height: 100%;
     overflow-y: auto;
     padding: 10px;
+}
+
+/* レシピグリッドのスクロールバー */
+.recipe-grid-container::-webkit-scrollbar {
+    width: 10px;
+}
+
+.recipe-grid-container::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+}
+
+.recipe-grid-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 5px;
+    border: 1px solid var(--bg-secondary);
+    transition: all 0.3s ease;
+}
+
+.recipe-grid-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--primary-hover), var(--primary-color));
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .recipe-grid-item {
@@ -1038,6 +1424,7 @@ body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     overflow: hidden;
+    height: 180px; /* 縦サイズを半分程度に制限 */
 }
 
 .recipe-grid-item:hover {
@@ -1051,36 +1438,38 @@ body {
 }
 
 .recipe-card-mini {
-    padding: 20px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 8px;
     height: 100%;
+    justify-content: space-between;
 }
 
 .recipe-icon-large {
     text-align: center;
-    font-size: 2.5em;
+    font-size: 1.8em;
     color: var(--primary-color);
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .recipe-name {
     margin: 0;
-    font-size: 1.1em;
+    font-size: 1em;
     font-weight: 600;
     color: var(--text-primary);
     text-align: center;
+    line-height: 1.2;
 }
 
 .recipe-type-badge {
     display: inline-block;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.75em;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-size: 0.7em;
     font-weight: 500;
     text-align: center;
-    margin: 5px 0;
+    margin: 3px 0;
 }
 
 .recipe-type-badge.basic {
@@ -1094,16 +1483,14 @@ body {
 }
 
 .recipe-desc {
-    font-size: 0.85em;
-    color: #666;
-    margin: 5px 0;
-    text-align: center;
+    display: none; /* 説明テキストを非表示 */
 }
 
 .ingredient-count {
-    font-size: 0.8em;
+    font-size: 0.75em;
     color: #888;
     text-align: center;
+    margin: 1px 0;
 }
 
 .recipe-actions {
@@ -1114,14 +1501,14 @@ body {
 }
 
 .action-btn {
-    padding: 8px;
+    padding: 6px;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-size: 0.9em;
-    min-width: 36px;
-    height: 36px;
+    font-size: 0.8em;
+    min-width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1152,16 +1539,24 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 50vh;
-    margin: 40px 0;
+    min-height: 60vh;
+    margin: 0 auto;
+    padding: 40px;
+    width: 100%;
 }
 
 .welcome-card {
     background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(143, 130, 255, 0.1));
     border-radius: 25px;
-    padding: 50px;
+    padding: 60px 80px;
     text-align: center;
-    max-width: 600px;
+    width: 900px;
+    max-width: 90vw;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 auto;
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(15px);
     border: 2px solid rgba(74, 144, 226, 0.2);
@@ -1189,23 +1584,24 @@ body {
 
 .welcome-actions {
     display: flex;
-    gap: 20px;
+    gap: 30px;
     justify-content: center;
     flex-wrap: wrap;
+    margin-top: 40px;
 }
 
 .welcome-btn {
-    padding: 15px 30px;
+    padding: 18px 40px;
     border: none;
-    border-radius: 12px;
+    border-radius: 15px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 500;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 10px;
-    min-width: 200px;
+    gap: 12px;
+    min-width: 220px;
     justify-content: center;
 }
 
@@ -1318,8 +1714,10 @@ body {
     border-radius: 20px;
     width: 95%;
     max-width: 1200px;
-    max-height: 90vh;
-    overflow-y: auto;
+    height: 75vh; /* クライアント領域の75%に設定 */
+    max-height: 75vh;
+    display: flex;
+    flex-direction: column;
     box-shadow: var(--shadow-strong);
     animation: modalSlideIn 0.3s ease-out;
     border: 1px solid var(--border-color);
@@ -1367,8 +1765,31 @@ body {
 
 .modal-body {
     padding: 25px;
-    max-height: 60vh;
+    flex: 1;
     overflow-y: auto;
+    min-height: 0; /* フレックスアイテムの高さを正しく制限 */
+}
+
+/* モーダル内容のスクロールバー */
+.modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: var(--bg-accent);
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: var(--border-dark);
+    border-radius: 4px;
+    border: 1px solid var(--bg-accent);
+    transition: all 0.3s ease;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
 
 .modal-footer {
@@ -1697,18 +2118,20 @@ select option:checked {
 }
 
 .custom-dropdown-menu::-webkit-scrollbar-track {
-    background: var(--bg-secondary);
+    background: var(--bg-accent);
     border-radius: 4px;
 }
 
 .custom-dropdown-menu::-webkit-scrollbar-thumb {
-    background: var(--border-color);
+    background: var(--border-dark);
     border-radius: 4px;
-    transition: background 0.3s ease;
+    border: 1px solid var(--bg-accent);
+    transition: all 0.3s ease;
 }
 
 .custom-dropdown-menu::-webkit-scrollbar-thumb:hover {
-    background: var(--text-muted);
+    background: var(--primary-color);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
 
 /* 小さいサイズのドロップダウン */
@@ -2228,7 +2651,16 @@ select option:checked {
     margin-right: 8px;
 }
 
-/* レシピツリー関連のスタイル */
+/* ==============================================
+   レシピツリーシステム
+   
+   動的に生成されるレシピ構成ツリーの表示システム
+   - ノードタイプ: レシピ（青）、基本材料（緑）、エラー（赤）
+   - 接続線: JavaScriptでSVG動的生成
+   - レスポンシブ: モバイル対応
+   ============================================== */
+
+/* ツリーコンテナ */
 .recipe-tree-container {
     margin-top: 20px;
     padding: 20px;
@@ -2237,6 +2669,7 @@ select option:checked {
     box-shadow: var(--shadow-medium);
     border: 2px solid var(--primary-color);
     border-left: 6px solid var(--primary-color);
+    position: relative;
 }
 
 .recipe-tree-container h3 {
@@ -2249,46 +2682,71 @@ select option:checked {
     gap: 10px;
 }
 
+/* ツリー全体 */
 .recipe-tree {
     font-family: 'Poppins', sans-serif;
     line-height: 1.4;
+    position: relative;
 }
 
+/* ノードの基本構造 */
 .tree-node {
     position: relative;
     margin-bottom: 8px;
     transition: all 0.3s ease;
+    z-index: 1;
 }
 
 .node-content {
     display: flex;
     align-items: center;
-    padding: 10px 14px;
+    justify-content: space-between;
+    padding: 12px 16px;
     background: var(--bg-primary);
     border-radius: 8px;
     box-shadow: var(--shadow-light);
-    border: 1px solid var(--border-color);
+    border: 2px solid var(--border-color);
     transition: all 0.3s ease;
     position: relative;
+    gap: 12px;
 }
 
-.node-content:hover {
-    transform: translateX(5px);
+.node-content:hover:not(.tree-node.basic-ingredient .node-content):not(.tree-node.recipe .node-content) {
+    transform: translateX(3px);
     box-shadow: var(--shadow-medium);
-    border-color: var(--border-dark);
+    border-color: var(--primary-color);
 }
 
+/* ツリーノードのホバーエフェクト */
+.tree-node .node-content:hover {
+    transform: translateX(3px);
+}
+
+/* ノード情報グループ */
+.node-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+    gap: 8px;
+}
+
+/* ノードの各要素 */
 .node-icon {
     width: 20px;
     text-align: center;
-    margin-right: 10px;
     font-size: 1.1em;
+    flex-shrink: 0;
 }
 
 .node-name {
     font-weight: 600;
     color: var(--text-primary);
-    margin-right: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
 }
 
 .node-type {
@@ -2296,35 +2754,79 @@ select option:checked {
     color: var(--text-muted);
     font-style: italic;
     font-weight: 500;
+    white-space: nowrap;
+    margin-left: 4px;
 }
 
-/* 基本材料ノード */
+/* ノードタイプ別スタイル */
+
+/* 基本材料ノード（緑色） - 強化版 */
+#recipeTree .tree-node.basic-ingredient .node-content,
+.recipe-tree .tree-node.basic-ingredient .node-content,
 .tree-node.basic-ingredient .node-content {
-    background: linear-gradient(135deg, rgba(22, 163, 74, 0.15), rgba(22, 163, 74, 0.08));
-    border: 2px solid var(--success-color);
-    border-left: 5px solid var(--success-color);
+    background: #dcfce7 !important;
+    border: 2px solid #16a34a !important;
+    border-left: 5px solid #16a34a !important;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.2) !important;
 }
 
+#recipeTree .tree-node.basic-ingredient .node-content:hover,
+.recipe-tree .tree-node.basic-ingredient .node-content:hover,
+.tree-node.basic-ingredient .node-content:hover {
+    border-color: #15803d !important;
+    box-shadow: 0 4px 16px rgba(22, 163, 74, 0.3) !important;
+    background: #bbf7d0 !important;
+}
+
+#recipeTree .tree-node.basic-ingredient .node-icon,
+.recipe-tree .tree-node.basic-ingredient .node-icon,
 .tree-node.basic-ingredient .node-icon {
-    color: var(--success-color);
+    color: #16a34a !important;
     font-weight: 600;
 }
 
-/* レシピノード */
+#recipeTree .tree-node.basic-ingredient .node-type,
+.recipe-tree .tree-node.basic-ingredient .node-type,
+.tree-node.basic-ingredient .node-type {
+    color: #16a34a !important;
+    font-weight: 600;
+}
+
+/* レシピノード（青色） - 強化版 */
+#recipeTree .tree-node.recipe .node-content,
+.recipe-tree .tree-node.recipe .node-content,
 .tree-node.recipe .node-content {
-    background: linear-gradient(135deg, rgba(30, 64, 175, 0.15), rgba(30, 64, 175, 0.08));
-    border: 2px solid var(--primary-color);
-    border-left: 5px solid var(--primary-color);
+    background: var(--tree-recipe-bg) !important;
+    border: 2px solid var(--tree-recipe-border) !important;
+    border-left: 5px solid var(--tree-recipe-border) !important;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1) !important;
 }
 
+#recipeTree .tree-node.recipe .node-content:hover,
+.recipe-tree .tree-node.recipe .node-content:hover,
+.tree-node.recipe .node-content:hover {
+    border-color: var(--tree-recipe-border) !important;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2) !important;
+    background: var(--tree-recipe-bg) !important;
+}
+
+#recipeTree .tree-node.recipe .node-icon,
+.recipe-tree .tree-node.recipe .node-icon,
 .tree-node.recipe .node-icon {
-    color: var(--primary-color);
+    color: var(--tree-recipe-border) !important;
     font-weight: 600;
 }
 
-/* エラーノード */
+#recipeTree .tree-node.recipe .node-type,
+.recipe-tree .tree-node.recipe .node-type,
+.tree-node.recipe .node-type {
+    color: var(--tree-recipe-border) !important;
+    font-weight: 500;
+}
+
+/* エラーノード（赤色） */
 .tree-node.error .node-content {
-    background: linear-gradient(135deg, rgba(220, 38, 38, 0.15), rgba(220, 38, 38, 0.08));
+    background: rgba(220, 38, 38, 0.1);
     border: 2px solid var(--error-color);
     border-left: 5px solid var(--error-color);
 }
@@ -2334,80 +2836,374 @@ select option:checked {
     font-weight: 600;
 }
 
-/* 数量バッジ */
+/* 数量表示 */
 .ingredient-amount {
     display: flex;
-    justify-content: flex-end;
-    margin-bottom: 4px;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    font-weight: 500;
+    white-space: nowrap;
 }
 
 .amount-badge {
     display: inline-block;
     background: var(--primary-color);
-    color: white;
-    padding: 4px 10px;
-    border-radius: 14px;
-    font-size: 0.85em;
+    color: var(--text-inverse);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
     font-weight: 700;
-    min-width: 28px;
+    min-width: 24px;
     text-align: center;
-    border: 2px solid var(--primary-hover);
     box-shadow: var(--shadow-light);
+    transition: all 0.3s ease;
 }
 
-/* ツリー接続線 */
-.tree-node:not(:first-child)::before {
-    content: '';
-    position: absolute;
-    left: -15px;
-    top: 0;
-    bottom: 50%;
-    width: 2px;
-    background: linear-gradient(to bottom, var(--border-dark), transparent);
-}
+/* ツリー表示システム */
 
-.tree-node::after {
-    content: '';
-    position: absolute;
-    left: -15px;
-    top: 50%;
-    width: 15px;
-    height: 2px;
-    background: var(--border-dark);
+.tree-node {
+    position: relative;
+    z-index: 1;
 }
 
 /* 子ノードのコンテナ */
 .node-children {
     position: relative;
+    margin-top: 8px;
+    margin-left: 20px;
+    transition: all 0.3s ease;
 }
 
-.node-children::before {
-    content: '';
-    position: absolute;
-    left: -15px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: linear-gradient(to bottom, var(--border-dark), transparent);
+/* 折りたたみボタン */
+.toggle-button {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.9em;
+    cursor: pointer;
+    padding: 4px;
+    margin-right: 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
 }
 
-/* レスポンシブ対応 */
+.toggle-button:hover {
+    background: var(--bg-secondary);
+    color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+.toggle-button i {
+    transition: transform 0.2s ease;
+}
+
+/* 折りたたまれた状態 */
+.tree-node.collapsed .toggle-button i {
+    transform: rotate(-90deg);
+}
+
+/* 折りたたみアニメーション */
+.node-children {
+    overflow: hidden;
+    max-height: none;
+    opacity: 1;
+}
+
+.tree-node.collapsed .node-children {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+}
+
+/* インデント表示（階層の視覚化） */
+.tree-node[data-depth="0"] {
+    margin-left: 0;
+}
+
+.tree-node[data-depth="1"] {
+    margin-left: 0;
+}
+
+.tree-node[data-depth="2"] {
+    margin-left: 0;
+}
+
+.tree-node[data-depth="3"] {
+    margin-left: 0;
+}
+
+/* ツリーコンテナ全体 */
+.recipe-tree {
+    background: transparent;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+
+
+/* ==============================================
+   レスポンシブ対応
+   ============================================== */
+
 @media (max-width: 768px) {
-    .tree-node {
-        margin-left: 0 !important;
-    }
-    
-    .ingredient-amount {
-        margin-left: 10px !important;
-    }
-    
-    .node-content {
-        padding: 6px 10px;
-        font-size: 0.9em;
-    }
-    
+    /* ツリー全体の調整 */
     .recipe-tree-container {
         padding: 15px;
         margin-top: 15px;
     }
+    
+    /* ノードの調整 */
+    .tree-node {
+        margin-bottom: 6px;
+    }
+    
+    /* 折りたたみボタンをより見やすく */
+    .toggle-button {
+        width: 24px;
+        height: 24px;
+        font-size: 1em;
+    }
+    
+    .node-content {
+        padding: 10px 12px;
+        font-size: 0.9em;
+    }
+    
+    .node-children {
+        margin-top: 6px;
+    }
+    
+    /* 数量バッジの調整 */
+    .ingredient-amount {
+        font-size: 0.85em;
+        gap: 4px;
+    }
+    
+    .amount-badge {
+        padding: 2px 6px;
+        font-size: 0.75em;
+        min-width: 20px;
+    }
+    
+    /* ウェルカムセクションのレスポンシブ */
+    .welcome-section {
+        min-height: 50vh;
+        padding: 20px;
+    }
+    
+    .welcome-card {
+        padding: 40px 30px;
+        width: 100%;
+        max-width: 95vw;
+        min-height: 300px;
+        margin: 0 auto;
+    }
+    
+    .welcome-card h2 {
+        font-size: 1.8em;
+    }
+    
+    .welcome-description {
+        font-size: 1em;
+    }
+    
+    .welcome-actions {
+        gap: 15px;
+        margin-top: 30px;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .welcome-btn {
+        padding: 15px 30px;
+        min-width: 200px;
+        font-size: 1rem;
+    }
+}
+
+/* モダンUI表示切り替えアニメーション */
+.fade-in {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.fade-out {
+    animation: fadeOut 0.3s ease-in forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+/* セクション間のスムーズな切り替え */
+.welcome-section,
+.recipe-management-section,
+.calculator-section {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center top;
+}
+
+/* ウェルカムセクションの特別なスタイル */
+.welcome-section {
+    position: relative;
+    z-index: 2;
+}
+
+.welcome-section.fade-in {
+    animation: welcomeSlideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes welcomeSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* メインコンテンツセクションのアニメーション */
+.recipe-management-section.fade-in,
+.calculator-section.fade-in {
+    animation: contentSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes contentSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 統計カードのスタガードアニメーション */
+.stat-item {
+    animation: statItemSlideIn 0.5s ease-out forwards;
+    opacity: 0;
+}
+
+.stat-item:nth-child(1) { animation-delay: 0.1s; }
+.stat-item:nth-child(2) { animation-delay: 0.2s; }
+.stat-item:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes statItemSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 隠れた状態のスタイル */
+.hidden {
+    display: none !important;
+}
+
+/* より滑らかな表示/非表示の管理 */
+.section-transition {
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s ease;
+}
+
+.section-hidden {
+    opacity: 0;
+    transform: translateY(-10px);
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.section-visible {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* ===== その他のスクロール領域の統一デザイン ===== */
+
+/* 材料リストやフォーム要素のスクロールバー */
+.ingredients-list::-webkit-scrollbar,
+.calculation-result::-webkit-scrollbar,
+.recipe-list-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.ingredients-list::-webkit-scrollbar-track,
+.calculation-result::-webkit-scrollbar-track,
+.recipe-list-content::-webkit-scrollbar-track {
+    background: var(--bg-accent);
+    border-radius: 4px;
+}
+
+.ingredients-list::-webkit-scrollbar-thumb,
+.calculation-result::-webkit-scrollbar-thumb,
+.recipe-list-content::-webkit-scrollbar-thumb {
+    background: var(--border-dark);
+    border-radius: 4px;
+    border: 1px solid var(--bg-accent);
+    transition: all 0.3s ease;
+}
+
+.ingredients-list::-webkit-scrollbar-thumb:hover,
+.calculation-result::-webkit-scrollbar-thumb:hover,
+.recipe-list-content::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* コンテナ全体のスクロールバー強化 */
+.container::-webkit-scrollbar {
+    width: 14px;
+}
+
+.container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 7px;
+    border: 2px solid rgba(255, 255, 255, 0.05);
+}
+
+.container::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    border-radius: 7px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--primary-hover), var(--primary-color));
+    transform: scale(1.05);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
 }

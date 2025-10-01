@@ -58,6 +58,17 @@ class CustomDropdown {
         this.renderOptions();
     }
 
+    // 新しいオプションを追加
+    addOption(value, text, icon = null) {
+        const newOption = {
+            value: value,
+            text: text,
+            icon: icon
+        };
+        this.options.push(newOption);
+        this.renderOptions();
+    }
+
     // オプションを追加
     addOption(value, text, disabled = false, icon = null) {
         this.options.push({ value, text, disabled, icon });
@@ -165,20 +176,57 @@ class CustomDropdown {
 
     // 新規追加ボタンを追加
     enableAddNew(text = '+ 新しい項目を追加', callback = null) {
+        // 既存の新規追加ボタンを削除
+        const existingAddNew = this.menu.querySelector('.custom-dropdown-add-new');
+        if (existingAddNew) {
+            existingAddNew.remove();
+        }
+
         const addNewElement = document.createElement('div');
         addNewElement.className = 'custom-dropdown-option custom-dropdown-add-new';
         addNewElement.innerHTML = `<i class="fas fa-plus"></i>${text}`;
 
         addNewElement.addEventListener('click', (e) => {
             e.stopPropagation();
+            console.log('Add new button clicked');
+            this.close();
             if (this.onAddNewCallback) {
+                console.log('Calling onAddNewCallback');
                 this.onAddNewCallback();
             } else if (callback) {
+                console.log('Calling callback');
                 callback();
             }
         });
 
-        this.menu.appendChild(addNewElement);
+        // 配置位置を決定（disabledオプションの直後）
+        const disabledOption = this.menu.querySelector('.custom-dropdown-option.disabled');
+        const searchInput = this.menu.querySelector('.custom-dropdown-search');
+        
+        if (disabledOption) {
+            // disabledオプションの直後に挿入
+            if (disabledOption.nextSibling) {
+                this.menu.insertBefore(addNewElement, disabledOption.nextSibling);
+            } else {
+                this.menu.appendChild(addNewElement);
+            }
+        } else if (searchInput) {
+            // 検索入力の後に挿入
+            if (searchInput.nextSibling) {
+                this.menu.insertBefore(addNewElement, searchInput.nextSibling);
+            } else {
+                this.menu.appendChild(addNewElement);
+            }
+        } else {
+            // 先頭に挿入
+            const firstChild = this.menu.firstChild;
+            if (firstChild) {
+                this.menu.insertBefore(addNewElement, firstChild);
+            } else {
+                this.menu.appendChild(addNewElement);
+            }
+        }
+        
         this.onAddNewCallback = callback;
     }
 
